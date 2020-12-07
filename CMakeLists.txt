@@ -77,6 +77,7 @@ include_directories(
   external/Simple-OpenGL-Image-Library/include/
   external/tinyxml2/include/
   external/tinyobjloader/include/
+  lab08/
   .
   )
 
@@ -100,6 +101,10 @@ add_definitions(
 # lab08
 add_executable(lab08
   lab08/lab.cpp
+  lab08/Particle.cpp
+  lab08/Particle.h
+  lab08/ParticleEmitter.cpp
+  lab08/ParticleEmitter.h
 
   common/util.cpp
   common/util.h
@@ -107,6 +112,7 @@ add_executable(lab08
   common/shader.h
   common/camera.cpp
   common/camera.h
+
   
   lab08/StandardShading.fragmentshader
   lab08/StandardShading.vertexshader

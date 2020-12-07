@@ -59,14 +59,17 @@ void free() {
 void mainLoop() {
     float t = glfwGetTime();
     vec3 lightPos = vec3(10, 10, 10);
-    float maxEnergy = 0;
+    GLuint particles_position_buffer;
+    glGenBuffers(1, &particles_position_buffer);
+   
     do {
-        // calculate dt
-        float currentTime = glfwGetTime();
-        float dt = currentTime - t;
+        float currentTime = 5 + glfwGetTime();
+        std::vector<glm::vec4> particle_pos = std::vector<glm::vec4>(int(currentTime), glm::vec4());
+        std::cout << particle_pos.size() << std::endl;
+        glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+        glInvalidateBufferData(GL_ARRAY_BUFFER);
+        glBufferData(GL_ARRAY_BUFFER, int(currentTime) * 4 * sizeof(GLfloat), &particle_pos[0], GL_STREAM_DRAW);
 
-        // Task 2e: change dt to 0.001f and observe the total energy, then change
-        // the numerical integration method to Runge - Kutta 4th order (in RigidBody.cpp)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
