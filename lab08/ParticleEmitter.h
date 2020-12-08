@@ -4,8 +4,8 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 #include "model.h"
+
 class ParticleEmitter
 {
 public:
@@ -21,8 +21,7 @@ public:
 	void updateParticles(float time);
 
 private:
-    void sendDataToGPU();
+    void bindAndUpdateBuffers();
     Drawable* model;
-
 };
 

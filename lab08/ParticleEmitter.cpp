@@ -3,40 +3,34 @@
 ParticleEmitter::ParticleEmitter(Drawable* _model, int number) {
     model = _model;
     number_of_particles = number;
-
+    glGenBuffers(1, &buffer);
     transformations.resize(number_of_particles, glm::mat4(1.0f));
 
     for(int i = 0 ; i< number_of_particles; i++){
         glm::mat4 tranlsation = glm::translate(glm::mat4(), glm::vec3(rand() % 10, rand() % 10, rand() % 10));
         transformations[i] = tranlsation;
     }
-    sendDataToGPU();
 }
 
 void ParticleEmitter::renderParticles() {
-    glBindVertexArray(model->VAO);
+    bindAndUpdateBuffers();
     glDrawElementsInstanced(GL_TRIANGLES, 3*model->indices.size(), GL_UNSIGNED_INT, 0, number_of_particles);
 }
 
 void ParticleEmitter::updateParticles(float time)
 {
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glInvalidateBufferData(GL_ARRAY_BUFFER); //make orhpan
-
     for (int i = 0; i < number_of_particles; i++) {
         glm::mat4 tranlsation = glm::translate(glm::mat4(), glm::vec3(rand() % 10, rand() % 10, rand() % 10));
         transformations[i] = tranlsation;
     }
-    sendDataToGPU();
 }
 
-void ParticleEmitter::sendDataToGPU()
+void ParticleEmitter::bindAndUpdateBuffers()
 {
     glBindVertexArray(model->VAO);
-
-
-    glGenBuffers(1, &buffer);
+    
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glInvalidateBufferData(GL_ARRAY_BUFFER);
     glBufferData(GL_ARRAY_BUFFER, number_of_particles * sizeof(glm::mat4), &transformations[0], GL_STREAM_DRAW);
 
     std::size_t vec4Size = sizeof(glm::vec4);
@@ -54,6 +48,4 @@ void ParticleEmitter::sendDataToGPU()
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
 
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
