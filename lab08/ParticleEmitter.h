@@ -19,7 +19,9 @@ public:
 	ParticleEmitter(Drawable* _model, int number);
 	void renderParticles();
 	void updateParticles(float time);
+
 private:
+    void sendDataToGPU();
     Drawable* model;
 
 };
