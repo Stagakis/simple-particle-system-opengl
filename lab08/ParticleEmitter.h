@@ -25,7 +25,7 @@ public:
 
 	std::vector<float> life_times;
 
-    unsigned int buffer;
+    unsigned int transformations_buffer;
 
 	ParticleEmitter(Drawable* _model, int number);
 	void renderParticles();

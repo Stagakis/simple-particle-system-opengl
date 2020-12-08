@@ -3,7 +3,7 @@
 ParticleEmitter::ParticleEmitter(Drawable* _model, int number) {
     model = _model;
     number_of_particles = number;
-    glGenBuffers(1, &buffer);
+    glGenBuffers(1, &transformations_buffer);
     transformations.resize(number_of_particles, glm::mat4(1.0f));
 
     for(int i = 0 ; i< number_of_particles; i++){
@@ -29,7 +29,7 @@ void ParticleEmitter::bindAndUpdateBuffers()
 {
     glBindVertexArray(model->VAO);
     
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);
     glInvalidateBufferData(GL_ARRAY_BUFFER);
     glBufferData(GL_ARRAY_BUFFER, number_of_particles * sizeof(glm::mat4), &transformations[0], GL_STREAM_DRAW);
 
