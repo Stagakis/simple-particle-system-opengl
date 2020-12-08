@@ -105,6 +105,8 @@ add_executable(lab08
   lab08/Particle.h
   lab08/ParticleEmitter.cpp
   lab08/ParticleEmitter.h
+  lab08/texture.cpp
+  lab08/texture.h
 
   common/util.cpp
   common/util.h
@@ -116,7 +118,7 @@ add_executable(lab08
   
   lab08/StandardShading.fragmentshader
   lab08/StandardShading.vertexshader
-  )
+        lab08/model.cpp lab08/model.h)
 target_link_libraries(lab08
   ${ALL_LIBS}
   )

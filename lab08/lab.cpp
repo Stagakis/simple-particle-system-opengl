@@ -16,8 +16,8 @@
 #include <common/shader.h>
 #include <common/util.h>
 #include <common/camera.h>
-
-
+#include <model.h>
+#include "ParticleEmitter.h"
 using namespace std;
 using namespace glm;
 
@@ -57,6 +57,8 @@ void free() {
 }
 
 void mainLoop() {
+    Drawable* monkey = new Drawable("suzanne.obj");
+    ParticleEmitter emitter(monkey, 100);
     float t = glfwGetTime();
     vec3 lightPos = vec3(10, 10, 10);
     GLuint particles_position_buffer;
@@ -81,6 +83,12 @@ void mainLoop() {
         mat4 viewMatrix = camera->viewMatrix;
         glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
         glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
+
+        auto model = mat4(1.0f);
+        glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &model[0][0]);
+
+        monkey->draw();
+        //emitter.renderParticles();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -150,6 +158,11 @@ void initialize() {
 
     // Create camera
     camera = new Camera(window);
+
+    glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
+                                 camera->onMouseMove(xpos, ypos);
+                             }
+    );
 }
 
 int main(void) {
