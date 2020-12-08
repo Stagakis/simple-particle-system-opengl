@@ -10,10 +10,21 @@ class ParticleEmitter
 {
 public:
     int number_of_particles;
-    std::vector<Particle> particle_list;
+
     std::vector<glm::mat4> transformations;
+
     GLuint modelIndecesVBO, modelTexturesVBO, modelNormalsVBO;
 	GLuint particleTransforms;
+
+	std::vector<glm::vec3> positions;
+	std::vector<glm::vec3> rot_axis;
+	std::vector<float> angles;
+
+	std::vector<glm::vec3> accels;
+	std::vector<glm::vec3> velocities;
+
+	std::vector<float> life_times;
+
     unsigned int buffer;
 
 	ParticleEmitter(Drawable* _model, int number);
@@ -23,5 +34,6 @@ public:
 private:
     void bindAndUpdateBuffers();
     Drawable* model;
+    Particle particle_blueprint;
 };
 

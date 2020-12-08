@@ -47,5 +47,4 @@ void ParticleEmitter::bindAndUpdateBuffers()
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
-
 }
