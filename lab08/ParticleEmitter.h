@@ -3,6 +3,8 @@
 #include <Particle.h>
 #include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "model.h"
 class ParticleEmitter
 {
@@ -12,10 +14,11 @@ public:
     std::vector<glm::mat4> transformations;
     GLuint modelIndecesVBO, modelTexturesVBO, modelNormalsVBO;
 	GLuint particleTransforms;
+    unsigned int buffer;
 
 	ParticleEmitter(Drawable* _model, int number);
 	void renderParticles();
-	void updateParticles();
+	void updateParticles(float time);
 private:
     Drawable* model;
 

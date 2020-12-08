@@ -18,6 +18,8 @@
 #include <common/camera.h>
 #include <model.h>
 #include "ParticleEmitter.h"
+#include <texture.h>
+
 using namespace std;
 using namespace glm;
 
@@ -36,7 +38,7 @@ GLFWwindow* window;
 Camera* camera;
 GLuint shaderProgram;
 GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation;
-
+GLuint diffuseTexture, diffuceColorSampler;
 // Standard acceleration due to gravity
 #define g 9.80665f
 
@@ -48,6 +50,9 @@ void createContext() {
     projectionMatrixLocation = glGetUniformLocation(shaderProgram, "P");
     viewMatrixLocation = glGetUniformLocation(shaderProgram, "V");
     modelMatrixLocation = glGetUniformLocation(shaderProgram, "M");
+
+    diffuceColorSampler = glGetUniformLocation(shaderProgram, "texture0");
+    diffuseTexture = loadSOIL("suzanne_diffuse.bmp");
 
 }
 
@@ -66,11 +71,13 @@ void mainLoop() {
    
     do {
         float currentTime = 5 + glfwGetTime();
-        std::vector<glm::vec4> particle_pos = std::vector<glm::vec4>(int(currentTime), glm::vec4());
-        std::cout << particle_pos.size() << std::endl;
-        glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-        glInvalidateBufferData(GL_ARRAY_BUFFER);
-        glBufferData(GL_ARRAY_BUFFER, int(currentTime) * 4 * sizeof(GLfloat), &particle_pos[0], GL_STREAM_DRAW);
+        
+        
+        //std::vector<glm::vec4> particle_pos = std::vector<glm::vec4>(int(currentTime), glm::vec4());
+        //std::cout << particle_pos.size() << std::endl;
+        //glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+        //glInvalidateBufferData(GL_ARRAY_BUFFER);
+        //glBufferData(GL_ARRAY_BUFFER, int(currentTime) * 4 * sizeof(GLfloat), &particle_pos[0], GL_STREAM_DRAW);
 
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -87,8 +94,15 @@ void mainLoop() {
         auto model = mat4(1.0f);
         glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &model[0][0]);
 
-        monkey->draw();
-        //emitter.renderParticles();
+        //monkey->bind();
+        //monkey->draw();
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+        glUniform1i(diffuceColorSampler, 0);
+
+        emitter.updateParticles(currentTime);
+        emitter.renderParticles();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -146,7 +160,7 @@ void initialize() {
     glDepthFunc(GL_LESS);
 
     // Cull triangles which normal is not towards the camera
-    glEnable(GL_CULL_FACE);
+    // glEnable(GL_CULL_FACE);
     // glFrontFace(GL_CW);
     // glFrontFace(GL_CCW);
 
