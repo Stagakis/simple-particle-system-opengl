@@ -42,7 +42,7 @@ void free();
 // Global variables
 GLFWwindow* window;
 Camera* camera;
-GLuint shaderProgram;
+GLuint particleShaderProgram;
 GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation, projectionAndViewMatrix;
 GLuint diffuseTexture, diffuceColorSampler;
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -54,24 +54,21 @@ bool game_paused = false;
 
 
 void createContext() {
-    shaderProgram = loadShaders(
+    particleShaderProgram = loadShaders(
         "StandardShading.vertexshader",
         "StandardShading.fragmentshader");
 
-    projectionMatrixLocation = glGetUniformLocation(shaderProgram, "P");
-    viewMatrixLocation = glGetUniformLocation(shaderProgram, "V");
-    modelMatrixLocation = glGetUniformLocation(shaderProgram, "M");
-    projectionAndViewMatrix = glGetUniformLocation(shaderProgram, "PV");
+    projectionAndViewMatrix = glGetUniformLocation(particleShaderProgram, "PV");
 
 
-    diffuceColorSampler = glGetUniformLocation(shaderProgram, "texture0");
+    diffuceColorSampler = glGetUniformLocation(particleShaderProgram, "texture0");
     diffuseTexture = loadSOIL("suzanne_diffuse.bmp");
     glfwSetKeyCallback(window, pollKeyboard);
 
 }
 
 void free() {
-    glDeleteProgram(shaderProgram);
+    glDeleteProgram(particleShaderProgram);
     glfwTerminate();
 }
 
@@ -81,11 +78,6 @@ void mainLoop() {
 
     FountainEmitter emitter(monkey, 15000);
 
-    vec3 lightPos = vec3(10, 10, 10);
-    GLuint particles_position_buffer;
-    glGenBuffers(1, &particles_position_buffer);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     float t = glfwGetTime();
     do {
         float currentTime = glfwGetTime();
@@ -93,17 +85,12 @@ void mainLoop() {
         std::cout << "fps: " << 1.0f/dt << std::endl;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
+        glUseProgram(particleShaderProgram);
 
         // camera
         camera->update();
         mat4 projectionMatrix = camera->projectionMatrix;
         mat4 viewMatrix = camera->viewMatrix;
-        glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
-        glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
-
-        auto model = mat4(1.0f);
-        glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &model[0][0]);
 
         auto PV = projectionMatrix * viewMatrix;
         glUniformMatrix4fv(projectionAndViewMatrix, 1, GL_FALSE, &PV[0][0]);
@@ -114,7 +101,7 @@ void mainLoop() {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseTexture);
         glUniform1i(diffuceColorSampler, 0);
-        emitter.renderParticles(0);
+        emitter.renderParticles();
 
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -180,6 +167,9 @@ void initialize() {
 
     // enable point size when drawing points
     glEnable(GL_PROGRAM_POINT_SIZE);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Log
     logGLParameters();

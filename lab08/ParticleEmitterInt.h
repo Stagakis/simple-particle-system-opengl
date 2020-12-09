@@ -5,12 +5,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "model.h"
 
+//Gives a random number between 0 and 1
 #define RAND ((float) rand()) / (float) RAND_MAX
 
 struct particleAttributes{
     glm::vec3 position = glm::vec3(0,0,0);
     glm::vec3 rot_axis= glm::vec3(0,1,0);
-    float angle = 0.0f;
+    float rot_angle = 0.0f;
     glm::vec3 accel = glm::vec3(0,0,0);
     glm::vec3 velocity= glm::vec3(0,0,0);
     float life = 0.0f;
@@ -23,10 +24,10 @@ public:
     int number_of_particles;
     std::vector<glm::mat4> transformations;
 	std::vector<particleAttributes> p_attributes;
-    glm::vec3 emitter_pos;
+    glm::vec3 emitter_pos; //the origin of the emitter
 
 	ParticleEmitterInt(Drawable* _model, int number);
-	void renderParticles(float time = 0);
+	void renderParticles();
 	virtual void updateParticles(float time, float dt) = 0;
 
 private:

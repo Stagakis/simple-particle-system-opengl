@@ -13,6 +13,8 @@ FountainEmitter::FountainEmitter(Drawable *_model, int number) : ParticleEmitter
 
 void FountainEmitter::updateParticles(float time, float dt) {
 
+    //This is for the fountain to slowly increase the number of its particles to the max amount
+    //instead of shooting all the particles at once
     if(active_particles < number_of_particles) {
         int batch = 25;
         int limit = std::min(number_of_particles - active_particles, batch);
@@ -24,10 +26,12 @@ void FountainEmitter::updateParticles(float time, float dt) {
 
     for(int i = 0; i < active_particles; i++){
         particleAttributes & particle = p_attributes[i];
+
         if(particle.position.y < emitter_pos.y - 10.0f){
             createNewParticle(i);
         }
-        particle.angle += 90*dt;
+
+        particle.rot_angle += 90*dt;
         particle.position = particle.position + particle.velocity*dt + particle.accel*(dt*dt)*0.5f;
         particle.velocity = particle.velocity + particle.accel*dt;
     }
@@ -41,6 +45,6 @@ void FountainEmitter::createNewParticle(int index){
     particle.mass = RAND + 0.5f;
     particle.rot_axis = glm::normalize(glm::vec3(1 - 2*RAND, 1 - 2*RAND, 1 - 2*RAND));
     particle.accel = glm::vec3(0.0f, -9.8f, 0.0f); //gravity force
-    particle.angle = RAND*360;
+    particle.rot_angle = RAND*360;
     particle.life = 1.0f; //mark it alive
 }

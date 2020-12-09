@@ -10,9 +10,6 @@ out vec2 UV;
 //out vec3 normal;
 
 // Values that stay constant for the whole mesh.
-uniform mat4 V;
-uniform mat4 M;
-uniform mat4 P;
 uniform mat4 PV;
 
 /*//
