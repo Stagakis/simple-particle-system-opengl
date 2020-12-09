@@ -102,8 +102,8 @@ add_definitions(
 # lab08
 add_executable(lab08
   lab08/lab.cpp
-        lab08/ParticleEmitterInt.cpp
-        lab08/ParticleEmitterInt.h
+  lab08/ParticleEmitterInt.cpp
+  lab08/ParticleEmitterInt.h
   lab08/texture.cpp
   lab08/texture.h
 
@@ -117,7 +117,7 @@ add_executable(lab08
   
   lab08/StandardShading.fragmentshader
   lab08/StandardShading.vertexshader
-        lab08/model.cpp lab08/model.h lab08/SimpleEmitter.cpp lab08/SimpleEmitter.h lab08/FountainEmitter.cpp lab08/FountainEmitter.h)
+        lab08/model.cpp lab08/model.h lab08/FountainEmitter.cpp lab08/FountainEmitter.h)
 target_link_libraries(lab08
   ${ALL_LIBS}
   )

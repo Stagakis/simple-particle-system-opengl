@@ -60,11 +60,9 @@ void createContext() {
 
     projectionAndViewMatrix = glGetUniformLocation(particleShaderProgram, "PV");
 
-
     diffuceColorSampler = glGetUniformLocation(particleShaderProgram, "texture0");
     diffuseTexture = loadSOIL("suzanne_diffuse.bmp");
     glfwSetKeyCallback(window, pollKeyboard);
-
 }
 
 void free() {
@@ -95,12 +93,12 @@ void mainLoop() {
         auto PV = projectionMatrix * viewMatrix;
         glUniformMatrix4fv(projectionAndViewMatrix, 1, GL_FALSE, &PV[0][0]);
 
-        if(!game_paused) {
-            emitter.updateParticles(currentTime, dt);
-        }
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseTexture);
         glUniform1i(diffuceColorSampler, 0);
+        if(!game_paused) {
+            emitter.updateParticles(currentTime, dt);
+        }
         emitter.renderParticles();
 
         glfwPollEvents();

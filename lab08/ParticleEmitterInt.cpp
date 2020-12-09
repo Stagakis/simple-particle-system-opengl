@@ -10,7 +10,6 @@ ParticleEmitterInt::ParticleEmitterInt(Drawable* _model, int number) {
     p_attributes.resize(number_of_particles, particleAttributes());
     transformations.resize(number_of_particles, glm::mat4(0.0f));
 
-
     glGenBuffers(1, &transformations_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);
 
@@ -48,7 +47,6 @@ void ParticleEmitterInt::bindAndUpdateBuffers()
             auto s = glm::scale(glm::mat4(), glm::vec3(p.mass, p.mass, p.mass));
             auto t = glm::translate(glm::mat4(), p.position);
             return t * r * s;
-        
         });
 
     //Bind the coresponding VAO of the model, since we are going to draw it
