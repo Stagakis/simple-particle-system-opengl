@@ -75,7 +75,7 @@ void free() {
 
 void mainLoop() {
     auto* monkey = new Drawable("suzanne.obj");
-    FountainEmitter emitter(monkey, 100000);
+    FountainEmitter emitter(monkey, 5000);
     vec3 lightPos = vec3(10, 10, 10);
     GLuint particles_position_buffer;
     glGenBuffers(1, &particles_position_buffer);
@@ -84,7 +84,7 @@ void mainLoop() {
     do {
         float currentTime = glfwGetTime();
         float dt = currentTime - t;
-        std::cout << "dt: " << dt << std::endl;
+        //std::cout << "dt: " << dt << std::endl;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
@@ -107,11 +107,8 @@ void mainLoop() {
         glUniform1i(diffuceColorSampler, 0);
         emitter.renderParticles();
 
-        glfwSwapBuffers(window);
-
-
-
         glfwPollEvents();
+        glfwSwapBuffers(window);
         t = currentTime;
 
     } while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
