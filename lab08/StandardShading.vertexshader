@@ -14,8 +14,8 @@ uniform mat4 V;
 uniform mat4 M;
 uniform mat4 P;
 
-
 /*// IGNORE
+
 mat4 lookAt(vec3 direction){
     vec3 rotation_vector = cross(vec3(0,1,0), normalize(direction));
     float theta = acos(dot(normalize(direction), vec3(0,1,0)));
@@ -32,7 +32,9 @@ mat4 lookAt(vec3 direction){
 
     return rotation_mat;
 }
+
 //*/
+
 
 void main() {
     // vertex position
@@ -40,5 +42,6 @@ void main() {
     UV = vertexUV;
 
     gl_Position =  P * V * aInstanceMatrix * vec4(vertexPosition_modelspace, 1);
+
     gl_PointSize = 10;
 }
