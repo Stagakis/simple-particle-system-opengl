@@ -79,12 +79,13 @@ void mainLoop() {
     camera->position = vec3(0, 5, 30);
     auto* monkey = new Drawable("suzanne.obj");
 
-    FountainEmitter emitter(monkey, 50000);
+    FountainEmitter emitter(monkey, 15000);
 
     vec3 lightPos = vec3(10, 10, 10);
     GLuint particles_position_buffer;
     glGenBuffers(1, &particles_position_buffer);
-
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     float t = glfwGetTime();
     do {
         float currentTime = glfwGetTime();

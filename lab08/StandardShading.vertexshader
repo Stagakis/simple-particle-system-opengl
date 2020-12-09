@@ -15,12 +15,13 @@ uniform mat4 M;
 uniform mat4 P;
 uniform mat4 PV;
 
-/*// IGNORE
-
+/*//
+//For the math behind this, look https://sites.google.com/site/glennmurray/Home/rotation-matrices-and-formulas/rotation-about-an-arbitrary-axis-in-3-dimensions
 mat4 rotate(vec3 direction, float theta){
     vec3 rotation_vector = direction;
     float sin_theta = sin(theta);
     float cos_theta = cos(theta);
+
     float u = rotation_vector.x;
     float v = rotation_vector.y;
     float w = rotation_vector.z;
@@ -33,7 +34,6 @@ mat4 rotate(vec3 direction, float theta){
 
     return rotation_mat;
 }
-
 //*/
 
 

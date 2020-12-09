@@ -43,8 +43,8 @@ void ParticleEmitterInt::bindAndUpdateBuffers()
     std::transform(std::execution::par_unseq, p_attributes.begin(), p_attributes.end(), transformations.begin(),
         [](particleAttributes p)->glm::mat4 {
             if (p.life == 0) return glm::mat4(0.0f);
-            auto r = glm::rotate(glm::mat4(), 0.0f, glm::vec3(0, 1, 0));
-            auto s = glm::scale(glm::mat4(), glm::vec3(1, 1, 1));
+            auto r = glm::rotate(glm::mat4(), glm::radians(p.angle), p.rot_axis);
+            auto s = glm::scale(glm::mat4(), glm::vec3(p.mass, p.mass, p.mass));
             auto t = glm::translate(glm::mat4(), p.position);
             return t * r * s;
         
