@@ -17,7 +17,6 @@ void FountainEmitter::updateParticles(float time, float dt) {
             createNewParticle(active_particles);
             active_particles++;
         }
-        //std::cout << active_particles << std::endl;
     }
 
     for(int i = 0; i < active_particles; i++){
