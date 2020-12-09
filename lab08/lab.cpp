@@ -75,7 +75,7 @@ void free() {
 
 void mainLoop() {
     auto* monkey = new Drawable("suzanne.obj");
-    FountainEmitter emitter(monkey, 5000);
+    FountainEmitter emitter(monkey, 10000);
     vec3 lightPos = vec3(10, 10, 10);
     GLuint particles_position_buffer;
     glGenBuffers(1, &particles_position_buffer);
