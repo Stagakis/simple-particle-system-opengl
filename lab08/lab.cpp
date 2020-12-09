@@ -17,8 +17,8 @@
 #include <common/util.h>
 #include <common/camera.h>
 #include <model.h>
-#include "ParticleEmitter.h"
 #include <texture.h>
+#include "SimpleEmitter.h"
 
 using namespace std;
 using namespace glm;
@@ -39,8 +39,13 @@ Camera* camera;
 GLuint shaderProgram;
 GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation;
 GLuint diffuseTexture, diffuceColorSampler;
+void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 // Standard acceleration due to gravity
 #define g 9.80665f
+
+bool game_paused = false;
+
 
 void createContext() {
     shaderProgram = loadShaders(
@@ -53,6 +58,7 @@ void createContext() {
 
     diffuceColorSampler = glGetUniformLocation(shaderProgram, "texture0");
     diffuseTexture = loadSOIL("suzanne_diffuse.bmp");
+    glfwSetKeyCallback(window, pollKeyboard);
 
 }
 
@@ -62,9 +68,8 @@ void free() {
 }
 
 void mainLoop() {
-    Drawable* monkey = new Drawable("suzanne.obj");
-    ParticleEmitter emitter(monkey, 100);
-    float t = glfwGetTime();
+    auto* monkey = new Drawable("suzanne.obj");
+    SimpleEmitter emitter(monkey, 100);
     vec3 lightPos = vec3(10, 10, 10);
     GLuint particles_position_buffer;
     glGenBuffers(1, &particles_position_buffer);
@@ -97,11 +102,12 @@ void mainLoop() {
         //monkey->bind();
         //monkey->draw();
 
+
+        if(!game_paused)
+            emitter.updateParticles(currentTime);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseTexture);
         glUniform1i(diffuceColorSampler, 0);
-
-        emitter.updateParticles(currentTime);
         emitter.renderParticles();
 
         glfwSwapBuffers(window);
@@ -177,6 +183,13 @@ void initialize() {
                                  camera->onMouseMove(xpos, ypos);
                              }
     );
+}
+void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    // Task 2.1:
+    if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+        game_paused = !game_paused;
+
+    }
 }
 
 int main(void) {
