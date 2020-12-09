@@ -1,5 +1,8 @@
 #include "ParticleEmitterInt.h"
 #include "iostream"
+#include <algorithm>
+#include <execution>
+
 ParticleEmitterInt::ParticleEmitterInt(Drawable* _model, int number) {
     model = _model;
     number_of_particles = number;
@@ -27,14 +30,26 @@ ParticleEmitterInt::ParticleEmitterInt(Drawable* _model, int number) {
     glVertexAttribDivisor(6, 1);
 }
 
-void ParticleEmitterInt::renderParticles() {
-    bindAndUpdateBuffers();
+void ParticleEmitterInt::renderParticles(float time) {
+    if(time < 5)
+        bindAndUpdateBuffers();
     glDrawElementsInstanced(GL_TRIANGLES, 3*model->indices.size(), GL_UNSIGNED_INT, 0, number_of_particles);
 }
 
 
 void ParticleEmitterInt::bindAndUpdateBuffers()
 {
+    //Calculate the model matrix in parallel
+    std::transform(std::execution::par_unseq, p_attributes.begin(), p_attributes.end(), transformations.begin(),
+        [](particleAttributes p)->glm::mat4 {
+            if (p.life == 0) return glm::mat4(0.0f);
+            auto r = glm::rotate(glm::mat4(), 0.0f, glm::vec3(0, 1, 0));
+            auto s = glm::scale(glm::mat4(), glm::vec3(1, 1, 1));
+            auto t = glm::translate(glm::mat4(), p.position);
+            return t * r * s;
+        
+        });
+
     glBindVertexArray(model->VAO);
     
     glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);

@@ -43,7 +43,7 @@ void free();
 GLFWwindow* window;
 Camera* camera;
 GLuint shaderProgram;
-GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation;
+GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation, projectionAndViewMatrix;
 GLuint diffuseTexture, diffuceColorSampler;
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
@@ -61,6 +61,8 @@ void createContext() {
     projectionMatrixLocation = glGetUniformLocation(shaderProgram, "P");
     viewMatrixLocation = glGetUniformLocation(shaderProgram, "V");
     modelMatrixLocation = glGetUniformLocation(shaderProgram, "M");
+    projectionAndViewMatrix = glGetUniformLocation(shaderProgram, "PV");
+
 
     diffuceColorSampler = glGetUniformLocation(shaderProgram, "texture0");
     diffuseTexture = loadSOIL("suzanne_diffuse.bmp");
@@ -74,9 +76,10 @@ void free() {
 }
 
 void mainLoop() {
+    camera->position = vec3(0, 5, 30);
     auto* monkey = new Drawable("suzanne.obj");
 
-    FountainEmitter emitter(monkey, 10000);
+    FountainEmitter emitter(monkey, 50000);
 
     vec3 lightPos = vec3(10, 10, 10);
     GLuint particles_position_buffer;
@@ -86,7 +89,7 @@ void mainLoop() {
     do {
         float currentTime = glfwGetTime();
         float dt = currentTime - t;
-        //std::cout << "dt: " << dt << std::endl;
+        std::cout << "fps: " << 1.0f/dt << std::endl;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
@@ -101,13 +104,16 @@ void mainLoop() {
         auto model = mat4(1.0f);
         glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &model[0][0]);
 
+        auto PV = projectionMatrix * viewMatrix;
+        glUniformMatrix4fv(projectionAndViewMatrix, 1, GL_FALSE, &PV[0][0]);
+
         if(!game_paused) {
             emitter.updateParticles(currentTime, dt);
         }
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseTexture);
         glUniform1i(diffuceColorSampler, 0);
-        emitter.renderParticles();
+        emitter.renderParticles(0);
 
         glfwPollEvents();
         glfwSwapBuffers(window);

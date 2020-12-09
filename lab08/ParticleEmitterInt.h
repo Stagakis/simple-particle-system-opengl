@@ -26,7 +26,7 @@ public:
     glm::vec3 emitter_pos;
 
 	ParticleEmitterInt(Drawable* _model, int number);
-	void renderParticles();
+	void renderParticles(float time = 0);
 	virtual void updateParticles(float time, float dt) = 0;
 
 private:

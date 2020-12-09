@@ -13,21 +13,22 @@ out vec2 UV;
 uniform mat4 V;
 uniform mat4 M;
 uniform mat4 P;
+uniform mat4 PV;
 
 /*// IGNORE
 
-mat4 lookAt(vec3 direction){
-    vec3 rotation_vector = cross(vec3(0,1,0), normalize(direction));
-    float theta = acos(dot(normalize(direction), vec3(0,1,0)));
-
+mat4 rotate(vec3 direction, float theta){
+    vec3 rotation_vector = direction;
+    float sin_theta = sin(theta);
+    float cos_theta = cos(theta);
     float u = rotation_vector.x;
     float v = rotation_vector.y;
     float w = rotation_vector.z;
 
     mat4 rotation_mat = mat4(1.0f);
-    rotation_mat[0] = vec4(u*u + (1-u*u)*cos(theta), u*v*(1-cos(theta))+w*sin(theta), u*v*(1-cos(theta)) - v*sin(theta), 0);
-    rotation_mat[1] = vec4(u*v*(1-cos(theta)) - w*sin(theta), v*v + (1-v*v)*cos(theta), v*w*(1-cos(theta)) + u*sin(theta), 0);
-    rotation_mat[2] = vec4(u*w*(1-cos(theta)) + v*sin(theta), v*w*(1-cos(theta)) - u*sin(theta), w*w + (1-w*w)*cos(theta), 0);
+    rotation_mat[0] = vec4(u*u + (1-u*u)*cos_theta, u*v*(1-cos_theta)+w*sin_theta, u*v*(1-cos_theta) - v*sin_theta, 0);
+    rotation_mat[1] = vec4(u*v*(1-cos_theta) - w*sin_theta, v*v + (1-v*v)*cos_theta, v*w*(1-cos_theta) + u*sin_theta, 0);
+    rotation_mat[2] = vec4(u*w*(1-cos_theta) + v*sin_theta, v*w*(1-cos_theta) - u*sin_theta, w*w + (1-w*w)*cos_theta, 0);
     rotation_mat[3] = vec4(0,0,0,1);
 
     return rotation_mat;
@@ -41,7 +42,7 @@ void main() {
 
     UV = vertexUV;
 
-    gl_Position =  P * V * aInstanceMatrix * vec4(vertexPosition_modelspace, 1);
+    gl_Position =  PV * aInstanceMatrix * vec4(vertexPosition_modelspace, 1);
 
     gl_PointSize = 10;
 }
