@@ -75,7 +75,7 @@ void free() {
 
 void mainLoop() {
     auto* monkey = new Drawable("suzanne.obj");
-    FountainEmitter emitter(monkey, 10000);
+    FountainEmitter emitter(monkey, 5000);
     vec3 lightPos = vec3(10, 10, 10);
     GLuint particles_position_buffer;
     glGenBuffers(1, &particles_position_buffer);
@@ -107,11 +107,8 @@ void mainLoop() {
         glUniform1i(diffuceColorSampler, 0);
         emitter.renderParticles();
 
-        glfwSwapBuffers(window);
-
-
-
         glfwPollEvents();
+        glfwSwapBuffers(window);
         t = currentTime;
 
     } while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&

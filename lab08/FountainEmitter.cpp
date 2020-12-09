@@ -13,7 +13,7 @@ FountainEmitter::FountainEmitter(Drawable *_model, int number) : ParticleEmitter
 void FountainEmitter::updateParticles(float time, float dt) {
 
     if(active_particles < number_of_particles) {
-        for(int i = 0 ; i < 5; i++){
+        for(int i = 0 ; i < 2; i++){
             createNewParticle(active_particles);
             active_particles++;
         }

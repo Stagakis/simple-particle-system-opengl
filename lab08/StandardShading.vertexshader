@@ -38,8 +38,6 @@ void main() {
 
     mat4 test_rotate = lookAt(vec3(1,0,0));
 
-
-
     gl_Position =  P * V * aInstanceMatrix * test_rotate * vec4(vertexPosition_modelspace, 1);
     gl_PointSize = 10;
 }
