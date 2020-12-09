@@ -3,8 +3,9 @@
 //
 
 #include "SimpleEmitter.h"
+#include "iostream"
+void SimpleEmitter::updateParticles(float time, float dt) {
 
-void SimpleEmitter::updateParticles(float time) {
     for (int i = 0; i < number_of_particles; i++) {
         p_attributes[i].position = glm::vec3(rand() % 10, rand() % 10, rand() % 10);
         p_attributes[i].rot_axis =  glm::vec3(rand() % 10, rand() % 10, rand() % 10);

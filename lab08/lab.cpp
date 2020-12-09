@@ -19,6 +19,12 @@
 #include <model.h>
 #include <texture.h>
 #include "SimpleEmitter.h"
+#include "FountainEmitter.h"
+
+//TODO delete the includes afterwards
+#include <chrono>
+using namespace std::chrono;
+//
 
 using namespace std;
 using namespace glm;
@@ -69,22 +75,16 @@ void free() {
 
 void mainLoop() {
     auto* monkey = new Drawable("suzanne.obj");
-    SimpleEmitter emitter(monkey, 100);
+    FountainEmitter emitter(monkey, 100000);
     vec3 lightPos = vec3(10, 10, 10);
     GLuint particles_position_buffer;
     glGenBuffers(1, &particles_position_buffer);
-   
+
+    float t = glfwGetTime();
     do {
-        float currentTime = 5 + glfwGetTime();
-        
-        
-        //std::vector<glm::vec4> particle_pos = std::vector<glm::vec4>(int(currentTime), glm::vec4());
-        //std::cout << particle_pos.size() << std::endl;
-        //glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-        //glInvalidateBufferData(GL_ARRAY_BUFFER);
-        //glBufferData(GL_ARRAY_BUFFER, int(currentTime) * 4 * sizeof(GLfloat), &particle_pos[0], GL_STREAM_DRAW);
-
-
+        float currentTime = glfwGetTime();
+        float dt = currentTime - t;
+        std::cout << "dt: " << dt << std::endl;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
@@ -99,19 +99,21 @@ void mainLoop() {
         auto model = mat4(1.0f);
         glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &model[0][0]);
 
-        //monkey->bind();
-        //monkey->draw();
-
-
-        if(!game_paused)
-            emitter.updateParticles(currentTime);
+        if(!game_paused) {
+            emitter.updateParticles(currentTime, dt);
+        }
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseTexture);
         glUniform1i(diffuceColorSampler, 0);
         emitter.renderParticles();
 
         glfwSwapBuffers(window);
+
+
+
         glfwPollEvents();
+        t = currentTime;
+
     } while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
              glfwWindowShouldClose(window) == 0);
 }

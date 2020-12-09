@@ -3,7 +3,7 @@
 ParticleEmitterInt::ParticleEmitterInt(Drawable* _model, int number) {
     model = _model;
     number_of_particles = number;
-
+    emitter_pos = glm::vec3(0.0f, 0.0f, 0.0f);
     p_attributes.resize(number_of_particles, particleAttributes());
     transformations.resize(number_of_particles, glm::mat4(1.0f));
 

@@ -10,7 +10,7 @@ class SimpleEmitter : public ParticleEmitterInt {
 
 public:
     SimpleEmitter(Drawable* _model, int number);
-    void updateParticles(float time) override;
+    void updateParticles(float time, float dt) override;
 
 };
 

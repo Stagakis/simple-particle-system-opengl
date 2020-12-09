@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "model.h"
 
+#define RAND ((float) rand()) / (float) RAND_MAX
+
 struct particleAttributes{
     glm::vec3 position = glm::vec3(0,0,0);
     glm::vec3 rot_axis= glm::vec3(0,1,0);
@@ -25,7 +27,7 @@ public:
 
 	ParticleEmitterInt(Drawable* _model, int number);
 	void renderParticles();
-	virtual void updateParticles(float time) = 0;
+	virtual void updateParticles(float time, float dt) = 0;
 
 private:
     void bindAndUpdateBuffers();
