@@ -26,6 +26,10 @@
 using namespace std::chrono;
 //
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 using namespace std;
 using namespace glm;
 
@@ -37,7 +41,7 @@ void free();
 
 #define W_WIDTH 1024
 #define W_HEIGHT 768
-#define TITLE "Lab 07"
+#define TITLE "Lab 08"
 
 // Global variables
 GLFWwindow* window;
@@ -47,11 +51,31 @@ GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation, projec
 GLuint diffuseTexture, diffuceColorSampler;
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-// Standard acceleration due to gravity
-#define g 9.80665f
-
 bool game_paused = false;
 
+void renderHelpingWindow() {
+
+    static float f = 0.0f;
+    static int counter = 0;
+
+    ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+    ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+
+    if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+        counter++;
+    ImGui::SameLine();
+    ImGui::Text("counter = %d", counter);
+
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::End();
+ 
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+}
 
 void createContext() {
     particleShaderProgram = loadShaders(
@@ -71,16 +95,27 @@ void free() {
 }
 
 void mainLoop() {
+    
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
     camera->position = vec3(0, 5, 30);
     auto* monkey = new Drawable("suzanne.obj");
 
-    FountainEmitter emitter(monkey, 15000);
+    FountainEmitter emitter(monkey, 10000);
 
     float t = glfwGetTime();
     do {
         float currentTime = glfwGetTime();
         float dt = currentTime - t;
-        std::cout << "fps: " << 1.0f/dt << std::endl;
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(particleShaderProgram);
@@ -101,6 +136,7 @@ void mainLoop() {
         }
         emitter.renderParticles();
 
+        renderHelpingWindow();
         glfwPollEvents();
         glfwSwapBuffers(window);
         t = currentTime;
@@ -184,6 +220,18 @@ void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mod
     // Task 2.1:
     if (key == GLFW_KEY_P && action == GLFW_PRESS) {
         game_paused = !game_paused;
+
+    }
+
+    if (key == GLFW_KEY_GRAVE_ACCENT && action == GLFW_PRESS) {
+        if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            camera->active = true;
+        }
+        else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            camera->active = false;
+        }
 
     }
 }

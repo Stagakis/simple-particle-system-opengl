@@ -41,11 +41,11 @@ void ParticleEmitterInt::bindAndUpdateBuffers()
 {
     //Calculate the model matrix in parallel to save performance
     std::transform(std::execution::par_unseq, p_attributes.begin(), p_attributes.end(), transformations.begin(),
-        [](particleAttributes p)->glm::mat4 {
+        [this](particleAttributes p)->glm::mat4 {
             if (p.life == 0) return glm::mat4(0.0f);
             auto r = glm::rotate(glm::mat4(), glm::radians(p.rot_angle), p.rot_axis);
             auto s = glm::scale(glm::mat4(), glm::vec3(p.mass, p.mass, p.mass));
-            auto t = glm::translate(glm::mat4(), p.position);
+            auto t = glm::translate(glm::mat4(), emitter_pos + p.position);
             return t * r * s;
         });
 

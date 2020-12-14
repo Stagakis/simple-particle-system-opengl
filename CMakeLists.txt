@@ -6,6 +6,10 @@ project(VVR_OGL_LABORATORY)
 
 find_package(OpenGL REQUIRED)
 
+if(UNIX)
+    find_package(TBB REQUIRED)
+endif()
+
 set (CMAKE_CXX_STANDARD 17)
 # c++17, -g option is used to export debug symbols for gdb
 if(${CMAKE_CXX_COMPILER_ID} MATCHES GNU OR
@@ -69,6 +73,24 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/rpavlik-cmake-module
 include(CreateLaunchers)
 include(MSVCMultipleProcessCompile) # /MP
 
+
+########### Dear ImGui import code
+set(IMGUI_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui)
+add_library(imgui 
+        ${IMGUI_PATH}/imgui.cpp
+        ${IMGUI_PATH}/imgui_draw.cpp
+        ${IMGUI_PATH}/imgui_demo.cpp
+        ${IMGUI_PATH}/imgui_tables.cpp
+        ${IMGUI_PATH}/imgui_widgets.cpp
+        ${IMGUI_PATH}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_PATH}/backends/imgui_impl_opengl3.cpp)
+target_compile_definitions(imgui PUBLIC -DIMGUI_IMPL_OPENGL_LOADER_GLEW)
+target_include_directories(imgui PUBLIC ${IMGUI_PATH}/ ${IMGUI_PATH}/backends/)
+
+target_link_libraries(imgui GLEW_1130 glfw)
+
+
+
 ###############################################################################
 
 include_directories(
@@ -88,6 +110,9 @@ set(ALL_LIBS
   GLEW_1130
   SOIL
   TINYXML2
+  imgui
+  ${ITK_LIBRARIES}
+  ${TBB_IMPORTED_TARGETS}
   )
 
 add_definitions(

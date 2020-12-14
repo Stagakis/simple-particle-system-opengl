@@ -6,17 +6,14 @@
 #include <iostream>
 #include <algorithm>
 
-
-FountainEmitter::FountainEmitter(Drawable *_model, int number) : ParticleEmitterInt(_model, number) {
-
-}
+FountainEmitter::FountainEmitter(Drawable *_model, int number) : ParticleEmitterInt(_model, number) {}
 
 void FountainEmitter::updateParticles(float time, float dt) {
 
     //This is for the fountain to slowly increase the number of its particles to the max amount
     //instead of shooting all the particles at once
     if(active_particles < number_of_particles) {
-        int batch = 25;
+        int batch = 15;
         int limit = std::min(number_of_particles - active_particles, batch);
         for(int i = 0 ; i < limit; i++){
             createNewParticle(active_particles);

@@ -22,6 +22,7 @@ public:
     float speed; // units / second
     float mouseSpeed;
     float fovSpeed;
+    bool active = true;
 
     Camera(GLFWwindow* window);
 

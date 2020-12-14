@@ -13,11 +13,13 @@ struct particleAttributes{
     glm::vec3 rot_axis= glm::vec3(0,1,0);
     float rot_angle = 0.0f;
     glm::vec3 accel = glm::vec3(0,0,0);
-    glm::vec3 velocity= glm::vec3(0,0,0);
+    glm::vec3 velocity = glm::vec3(0,0,0);
     float life = 0.0f;
     float mass = 0.0f;
 };
 
+
+//ParticleEmitterInt is an interface class. Emitter classes must derive from this one and implement the updateParticles method
 class ParticleEmitterInt
 {
 public:
