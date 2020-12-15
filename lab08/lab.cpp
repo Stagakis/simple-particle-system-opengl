@@ -117,7 +117,7 @@ void mainLoop() {
 
     OrbitEmitter emitter(monkey,  3000, 10.0f, 60.0f);
     
-    FountainEmitter f_emmiter(monkey,  5000);
+    FountainEmitter f_emmiter(monkey,  12000);
 
     float t = glfwGetTime();
     do {
@@ -143,24 +143,24 @@ void mainLoop() {
         glBindTexture(GL_TEXTURE_2D, diffuseTexture);
         glUniform1i(diffuceColorSampler, 0);
         if(!game_paused) {
-            emitter.updateParticles(currentTime, dt);
             f_emmiter.updateParticles(currentTime, dt);
+            emitter.updateParticles(currentTime, dt);
         }
         emitter.renderParticles(0);
         f_emmiter.renderParticles(0);
 
-
         glUseProgram(normalShaderProgram);
-        //glActiveTexture(GL_TEXTURE0);
-        //glBindTexture(GL_TEXTURE_2D, diffuseTexture);
-        //glUniform1i(diffuceColorSampler, 0);
-        auto modelMatrix = glm::scale(glm::mat4(), vec3(3.0f, 3.0f, 3.0f));
-        glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
-        glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
-        glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
+        
+        /*
         monkey->bind();
-        monkey->draw();
-
+        for (int i = 0; i < f_emmiter.number_of_particles; i++) {
+            auto modelMatrix = glm::scale(mat4(1.0f), vec3(4.0f, 4.0f, 4.0f));
+            glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
+            glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
+            glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
+            monkey->draw();
+        }
+        */
 
         renderHelpingWindow();
         glfwPollEvents();
