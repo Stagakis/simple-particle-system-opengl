@@ -20,7 +20,7 @@
 #include <texture.h>
 #include "SimpleEmitter.h"
 #include "FountainEmitter.h"
-
+#include "OrbitEmitter.h"
 //TODO delete the includes afterwards
 #include <chrono>
 using namespace std::chrono;
@@ -106,7 +106,9 @@ void mainLoop() {
     camera->position = vec3(0, 5, 30);
     auto* monkey = new Drawable("suzanne.obj");
 
-    FountainEmitter emitter(monkey, 10000);
+    OrbitEmitter emitter(monkey,  3000, 10.0f, 60.0f);
+
+    FountainEmitter f_emmiter(monkey,  5000);
 
     float t = glfwGetTime();
     do {
@@ -133,9 +135,10 @@ void mainLoop() {
         glUniform1i(diffuceColorSampler, 0);
         if(!game_paused) {
             emitter.updateParticles(currentTime, dt);
+            f_emmiter.updateParticles(currentTime, dt);
         }
-        emitter.renderParticles();
-
+        emitter.renderParticles(0);
+        f_emmiter.renderParticles(0);
         renderHelpingWindow();
         glfwPollEvents();
         glfwSwapBuffers(window);

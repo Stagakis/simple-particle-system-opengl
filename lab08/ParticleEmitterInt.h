@@ -16,6 +16,13 @@ struct particleAttributes{
     glm::vec3 velocity = glm::vec3(0,0,0);
     float life = 0.0f;
     float mass = 0.0f;
+
+    float dist_from_camera = 0.0f;
+    bool operator < (const particleAttributes & p) const
+    {
+        return dist_from_camera <= p.dist_from_camera;
+    }
+
 };
 
 
@@ -29,12 +36,13 @@ public:
     glm::vec3 emitter_pos; //the origin of the emitter
 
 	ParticleEmitterInt(Drawable* _model, int number);
-	void renderParticles();
+	void renderParticles(int time = 0);
 	virtual void updateParticles(float time, float dt) = 0;
+
+    Drawable* model;
 
 private:
     void bindAndUpdateBuffers();
     GLuint transformations_buffer;
-    Drawable* model;
 };
 

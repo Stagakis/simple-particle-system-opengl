@@ -6,7 +6,7 @@ project(VVR_OGL_LABORATORY)
 
 find_package(OpenGL REQUIRED)
 
-if(UNIX)
+if(UNIX OR APPLE)
     find_package(TBB REQUIRED)
 endif()
 
@@ -142,7 +142,7 @@ add_executable(lab08
   
   lab08/StandardShading.fragmentshader
   lab08/StandardShading.vertexshader
-        lab08/model.cpp lab08/model.h lab08/FountainEmitter.cpp lab08/FountainEmitter.h)
+        lab08/model.cpp lab08/model.h lab08/FountainEmitter.cpp lab08/FountainEmitter.h lab08/OrbitEmitter.cpp lab08/OrbitEmitter.h)
 target_link_libraries(lab08
   ${ALL_LIBS}
   )

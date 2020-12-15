@@ -94,7 +94,7 @@ void Camera::update()
 	}
 
     // Task 5.7: construct projection and view matrices
-	projectionMatrix = perspective(radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
+	projectionMatrix = perspective(radians(FoV), 4.0f / 3.0f, 0.1f, 200.0f);
     viewMatrix = lookAt(
 		position,
         position + direction,
