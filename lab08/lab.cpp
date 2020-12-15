@@ -144,23 +144,28 @@ void mainLoop() {
         glUniform1i(diffuceColorSampler, 0);
         if(!game_paused) {
             f_emmiter.updateParticles(currentTime, dt);
-            emitter.updateParticles(currentTime, dt);
+            //emitter.updateParticles(currentTime, dt);
         }
-        emitter.renderParticles(0);
-        f_emmiter.renderParticles(0);
+        //emitter.renderParticles(0);
+        //f_emmiter.renderParticles(0);
 
         glUseProgram(normalShaderProgram);
         
-        /*
+        //*//
         monkey->bind();
         for (int i = 0; i < f_emmiter.number_of_particles; i++) {
-            auto modelMatrix = glm::scale(mat4(1.0f), vec3(4.0f, 4.0f, 4.0f));
+            auto p = f_emmiter.p_attributes[i];
+            //auto modelMatrix = glm::scale(mat4(1.0f), vec3(4.0f, 4.0f, 4.0f));
+            auto r = glm::rotate(glm::mat4(), glm::radians(p.rot_angle), p.rot_axis);
+            auto s = glm::scale(glm::mat4(), glm::vec3(p.mass, p.mass, p.mass));
+            auto t = glm::translate(glm::mat4(), p.position);
+            auto modelMatrix = t * r * s;
             glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
             glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
             glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
             monkey->draw();
         }
-        */
+        //*/
 
         renderHelpingWindow();
         glfwPollEvents();
