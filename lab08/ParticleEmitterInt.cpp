@@ -49,8 +49,6 @@ void ParticleEmitterInt::configureVAO()
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->elementVBO);
 
-
-
     //GLSL treats mat4 data as 4 vec4. So we need to enable attributes 3,4,5 and 6, one for each vec4
     glGenBuffers(1, &transformations_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);

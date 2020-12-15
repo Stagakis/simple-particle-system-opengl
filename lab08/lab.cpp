@@ -46,7 +46,7 @@ void free();
 // Global variables
 GLFWwindow* window;
 Camera* camera;
-GLuint particleShaderProgram;
+GLuint particleShaderProgram, normalShaderProgram;
 GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation, projectionAndViewMatrix;
 GLuint diffuseTexture, diffuceColorSampler;
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -79,10 +79,19 @@ void renderHelpingWindow() {
 
 void createContext() {
     particleShaderProgram = loadShaders(
+        "ParticleShader.vertexshader",
+        "ParticleShader.fragmentshader");
+
+    normalShaderProgram = loadShaders(
         "StandardShading.vertexshader",
         "StandardShading.fragmentshader");
 
     projectionAndViewMatrix = glGetUniformLocation(particleShaderProgram, "PV");
+
+    modelMatrixLocation = glGetUniformLocation(normalShaderProgram, "M");
+    viewMatrixLocation = glGetUniformLocation(normalShaderProgram, "V");
+    projectionMatrixLocation = glGetUniformLocation(normalShaderProgram, "P");
+
 
     diffuceColorSampler = glGetUniformLocation(particleShaderProgram, "texture0");
     diffuseTexture = loadSOIL("suzanne_diffuse.bmp");
@@ -107,7 +116,7 @@ void mainLoop() {
     auto* monkey = new Drawable("suzanne.obj");
 
     OrbitEmitter emitter(monkey,  3000, 10.0f, 60.0f);
-
+    
     FountainEmitter f_emmiter(monkey,  5000);
 
     float t = glfwGetTime();
@@ -139,6 +148,20 @@ void mainLoop() {
         }
         emitter.renderParticles(0);
         f_emmiter.renderParticles(0);
+
+
+        glUseProgram(normalShaderProgram);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+        //glUniform1i(diffuceColorSampler, 0);
+        auto modelMatrix = glm::scale(glm::mat4(), vec3(3.0f, 3.0f, 3.0f));
+        glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
+        glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
+        glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
+        monkey->bind();
+        monkey->draw();
+
+
         renderHelpingWindow();
         glfwPollEvents();
         glfwSwapBuffers(window);
