@@ -10,28 +10,7 @@ ParticleEmitterInt::ParticleEmitterInt(Drawable* _model, int number) {
     p_attributes.resize(number_of_particles, particleAttributes());
     transformations.resize(number_of_particles, glm::mat4(0.0f));
 
-
-    if(transformations_buffer == 0) {  //Do not initialize buffer in case handle already exists
-        glGenBuffers(1, &transformations_buffer);
-        glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);
-
-        //GLSL treats mat4 data as 4 vec4. So we need to enable attributes 3,4,5 and 6, one for each vec4
-        std::size_t vec4Size = sizeof(glm::vec4);
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *) 0);
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *) (1 * vec4Size));
-        glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *) (2 * vec4Size));
-        glEnableVertexAttribArray(6);
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void *) (3 * vec4Size));
-
-        //This tells opengl how each particle should get data its slice of data from the mat4
-        glVertexAttribDivisor(3, 1);
-        glVertexAttribDivisor(4, 1);
-        glVertexAttribDivisor(5, 1);
-        glVertexAttribDivisor(6, 1);
-    }
+    configureVAO();
 }
 
 void ParticleEmitterInt::renderParticles(int time) {
@@ -39,6 +18,55 @@ void ParticleEmitterInt::renderParticles(int time) {
         bindAndUpdateBuffers();
     }
     glDrawElementsInstanced(GL_TRIANGLES, 3 * model->indices.size(), GL_UNSIGNED_INT, 0, number_of_particles);
+}
+
+void ParticleEmitterInt::configureVAO()
+{
+    glGenVertexArrays(1, &emitterVAO);
+    glBindVertexArray(emitterVAO);
+
+    glGenBuffers(1, &transformations_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);
+
+    //We are using the model's buffer but since they are already in the GPU from the Drawable's constructor we just need to configure 
+    //our own VAO by using glVertexAttribPointer and glEnableVertexAttribArray but without sending any data with glBufferData.
+    glBindBuffer(GL_ARRAY_BUFFER, model->verticesVBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(0);
+
+    if (model->indexedNormals.size() != 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, model->normalsVBO);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(1);
+    }
+
+
+    if (model->indexedUVS.size() != 0) {
+        glBindBuffer(GL_ARRAY_BUFFER, model->uvsVBO);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(2);
+    }
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->elementVBO);
+    glBindVertexArray(0);
+
+
+    //GLSL treats mat4 data as 4 vec4. So we need to enable attributes 3,4,5 and 6, one for each vec4
+    std::size_t vec4Size = sizeof(glm::vec4);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+    //This tells opengl how each particle should get data its slice of data from the mat4
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
 }
 
 void ParticleEmitterInt::bindAndUpdateBuffers()
@@ -55,7 +83,7 @@ void ParticleEmitterInt::bindAndUpdateBuffers()
         });
 
     //Bind the coresponding VAO of the model, since we are going to draw it
-    glBindVertexArray(model->VAO);
+    glBindVertexArray(emitterVAO);
 
     //Send transformation data to the GPU
     glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);

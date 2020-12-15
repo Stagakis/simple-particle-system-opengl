@@ -30,6 +30,7 @@ struct particleAttributes{
 class ParticleEmitterInt
 {
 public:
+    GLuint emitterVAO;
     int number_of_particles;
     std::vector<glm::mat4> transformations;
 	std::vector<particleAttributes> p_attributes;
@@ -38,7 +39,7 @@ public:
 	ParticleEmitterInt(Drawable* _model, int number);
 	void renderParticles(int time = 0);
 	virtual void updateParticles(float time, float dt) = 0;
-
+    void configureVAO();
     Drawable* model;
 
 private:
