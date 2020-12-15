@@ -22,11 +22,11 @@ void ParticleEmitterInt::renderParticles(int time) {
 
 void ParticleEmitterInt::configureVAO()
 {
+
+
     glGenVertexArrays(1, &emitterVAO);
     glBindVertexArray(emitterVAO);
 
-    glGenBuffers(1, &transformations_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);
 
     //We are using the model's buffer but since they are already in the GPU from the Drawable's constructor we just need to configure 
     //our own VAO by using glVertexAttribPointer and glEnableVertexAttribArray but without sending any data with glBufferData.
@@ -48,10 +48,12 @@ void ParticleEmitterInt::configureVAO()
     }
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->elementVBO);
-    glBindVertexArray(0);
+
 
 
     //GLSL treats mat4 data as 4 vec4. So we need to enable attributes 3,4,5 and 6, one for each vec4
+    glGenBuffers(1, &transformations_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);
     std::size_t vec4Size = sizeof(glm::vec4);
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
@@ -67,6 +69,9 @@ void ParticleEmitterInt::configureVAO()
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
+
+
+    glBindVertexArray(0);
 }
 
 void ParticleEmitterInt::bindAndUpdateBuffers()

@@ -1,0 +1,11 @@
+#version 330 core
+
+out vec4 fragmentColor;
+
+in vec2 UV;
+
+uniform sampler2D texture0;
+
+void main() {
+    fragmentColor = vec4(texture(texture0, UV).rgb, 0.5f);
+}
