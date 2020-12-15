@@ -33,6 +33,7 @@ public:
     int number_of_particles;
     std::vector<glm::mat4> transformations;
 	std::vector<particleAttributes> p_attributes;
+
     glm::vec3 emitter_pos; //the origin of the emitter
 
 	ParticleEmitterInt(Drawable* _model, int number);

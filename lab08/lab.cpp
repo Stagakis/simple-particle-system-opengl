@@ -49,27 +49,29 @@ Camera* camera;
 GLuint particleShaderProgram;
 GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation, projectionAndViewMatrix;
 GLuint diffuseTexture, diffuceColorSampler;
+
+glm::vec3 orbit_emmiter_pos(0.0f, 10.0f, 0.0f);
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 bool game_paused = false;
 
 void renderHelpingWindow() {
-
-    static float f = 0.0f;
     static int counter = 0;
 
-    ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+    ImGui::Begin("Helper Window");                          // Create a window called "Hello, world!" and append into it.
 
     ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 
-    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+    ImGui::SliderFloat("x position", &orbit_emmiter_pos[0], -30.0f, 30.0f);
+    ImGui::SliderFloat("y position", &orbit_emmiter_pos[1], -30.0f, 30.0f);
+    ImGui::SliderFloat("z position", &orbit_emmiter_pos[2], -30.0f, 30.0f);
 
     if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
         counter++;
     ImGui::SameLine();
     ImGui::Text("counter = %d", counter);
 
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    ImGui::Text("Performance %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
  
     ImGui::Render();
@@ -106,12 +108,17 @@ void mainLoop() {
     camera->position = vec3(0, 5, 30);
     auto* monkey = new Drawable("suzanne.obj");
 
-    OrbitEmitter emitter(monkey,  3000, 10.0f, 60.0f);
+    OrbitEmitter orb_emitter(monkey,  2000, 10.0f, 60.0f);
 
-    FountainEmitter f_emmiter(monkey,  5000);
+    OrbitEmitter orb_emitter2(monkey,  800, 20.0f, 40.0f);
+
+    FountainEmitter f_emmiter(monkey,  5500);
+    //FountainEmitter f_emmiter2(monkey,  5500);
 
     float t = glfwGetTime();
     do {
+        orb_emitter2.emitter_pos = orbit_emmiter_pos;
+
         float currentTime = glfwGetTime();
         float dt = currentTime - t;
 
@@ -134,11 +141,14 @@ void mainLoop() {
         glBindTexture(GL_TEXTURE_2D, diffuseTexture);
         glUniform1i(diffuceColorSampler, 0);
         if(!game_paused) {
-            emitter.updateParticles(currentTime, dt);
+            orb_emitter.updateParticles(currentTime, dt);
+            orb_emitter2.updateParticles(currentTime, dt);
             f_emmiter.updateParticles(currentTime, dt);
         }
-        emitter.renderParticles(0);
+        orb_emitter.renderParticles(0);
         f_emmiter.renderParticles(0);
+        orb_emitter2.renderParticles(0);
+
         renderHelpingWindow();
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -168,6 +178,7 @@ void initialize() {
                             " If you have an Intel GPU, they are not 3.3 compatible." +
                             "Try the 2.1 version.\n"));
     }
+
     glfwMakeContextCurrent(window);
 
     // Start GLEW extension handler
@@ -223,7 +234,6 @@ void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mod
     // Task 2.1:
     if (key == GLFW_KEY_P && action == GLFW_PRESS) {
         game_paused = !game_paused;
-
     }
 
     if (key == GLFW_KEY_GRAVE_ACCENT && action == GLFW_PRESS) {
