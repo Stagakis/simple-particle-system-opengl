@@ -11,5 +11,5 @@ void main() {
     vec4 texColor = texture(texture0, UV);
     if(length(texColor.rgb) < 0.1)
         discard;
-    fragmentColor = texColor;
+    fragmentColor = vec4(texColor.rgb, 0.5f);
 }

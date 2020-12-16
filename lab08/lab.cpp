@@ -51,10 +51,15 @@ GLuint translationMatrixLocation, rotationMatrixLocation, scaleMatrixLocation;
 GLuint monkeyTexture, diffuceColorSampler, fireTexture;
 
 glm::vec3 slider_emitter_pos(0.0f, 10.0f, 0.0f);
-int particles_slider= 10000;
+int particles_slider = 10000;
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 bool game_paused = false;
+
+bool use_sorting = false;
+bool use_rotations = false;
+
+glm::vec4 background_color = glm::vec4(0.5f, 0.5f, 0.5f, 0.0f);
 
 void renderHelpingWindow() {
     static int counter = 0;
@@ -62,6 +67,8 @@ void renderHelpingWindow() {
     ImGui::Begin("Helper Window");                          // Create a window called "Hello, world!" and append into it.
 
     ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+    ImGui::ColorEdit3("Background", &background_color[0]);
 
     ImGui::SliderFloat("x position", &slider_emitter_pos[0], -30.0f, 30.0f);
     ImGui::SliderFloat("y position", &slider_emitter_pos[1], -30.0f, 30.0f);
@@ -73,6 +80,9 @@ void renderHelpingWindow() {
         counter++;
     ImGui::SameLine();
     ImGui::Text("counter = %d", counter);
+
+    ImGui::Checkbox("Use sorting", &use_sorting);
+    ImGui::Checkbox("Use rotations", &use_rotations);
 
     ImGui::Text("Performance %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
@@ -128,17 +138,14 @@ void mainLoop() {
     auto* quad = new Drawable("quad.obj");
 
     OrbitEmitter orb_emitter(monkey,  2000, 10.0f, 60.0f);
-
-    OrbitEmitter orb_emitter2(monkey,  800, 20.0f, 40.0f);
-
-    FountainEmitter f_emitter(monkey,  particles_slider);
-
-    //FountainEmitter f_emmiter2(monkey,  5500);
+    FountainEmitter f_emitter = FountainEmitter(monkey,  particles_slider);
 
     float t = glfwGetTime();
     do {
         f_emitter.changeParticleNumber(particles_slider);
         f_emitter.emitter_pos = slider_emitter_pos;
+        f_emitter.use_rotations = use_rotations;
+        f_emitter.use_sorting = use_sorting;
 
         float currentTime = glfwGetTime();
         float dt = currentTime - t;
@@ -146,6 +153,7 @@ void mainLoop() {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        glClearColor(background_color[0], background_color[1], background_color[2], background_color[3]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(particleShaderProgram);
@@ -158,19 +166,16 @@ void mainLoop() {
         auto PV = projectionMatrix * viewMatrix;
         glUniformMatrix4fv(projectionAndViewMatrix, 1, GL_FALSE, &PV[0][0]);
 
-
         //*/ Use particle based drawing
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, monkeyTexture);
         glUniform1i(diffuceColorSampler, 0);
         if(!game_paused) {
             f_emitter.updateParticles(currentTime, dt, camera->position);
-            //orb_emitter.updateParticles(currentTime, dt);
-            //orb_emitter2.updateParticles(currentTime, dt);
+            //orb_emitter.updateParticles(currentTime, dt, camera->position);
         }
         f_emitter.renderParticles(0);
         //orb_emitter.renderParticles(0);
-        //orb_emitter2.renderParticles(0);
         //*/
         
         
@@ -179,18 +184,17 @@ void mainLoop() {
         monkey->bind();
         glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
         glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
-        for (int i = 0; i < slider_emitter_pos; i++) {
-            auto p = f_emmiter.p_attributes[i];
+        for (int i = 0; i < particles_slider; i++) {
+            auto p = f_emitter.p_attributes[i];
             //auto modelMatrix = glm::scale(mat4(1.0f), vec3(4.0f, 4.0f, 4.0f));
-            auto r = glm::rotate(glm::mat4(), 1.0f, glm::vec3(0,1,0));
+            auto r = glm::rotate(glm::mat4(), 1.0f, glm::vec3(1,1,0));
             auto s = glm::scale(glm::mat4(), glm::vec3(1,1,1));
             auto t = glm::translate(glm::mat4(), glm::vec3(RAND*30-60, RAND * 30 - 60, RAND * 30 - 60));
             
             glUniformMatrix4fv(translationMatrixLocation, 1, GL_FALSE, &t[0][0]);
             glUniformMatrix4fv(rotationMatrixLocation, 1, GL_FALSE, &r[0][0]);
             glUniformMatrix4fv(scaleMatrixLocation, 1, GL_FALSE, &s[0][0]);
-
-            
+                        
             auto modelMatrix = t * r * s;
             glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
             

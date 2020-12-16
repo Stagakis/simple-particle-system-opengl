@@ -1,9 +1,9 @@
 #include "IntParticleEmitter.h"
 #include "iostream"
+#include <algorithm>
 
 
 #ifdef USE_PARALLEL_TRANSFORM
-    #include <algorithm>
     #include <execution>
 #endif // USE_PARALLEL_TRANSFORM
 
@@ -14,7 +14,8 @@ IntParticleEmitter::IntParticleEmitter(Drawable* _model, int number) {
     number_of_particles = number;
     emitter_pos = glm::vec3(0.0f, 0.0f, 0.0f);
     p_attributes.resize(number_of_particles, particleAttributes());
-    transformations.resize(number_of_particles, glm::mat4(0.0f));
+
+    translations.resize(number_of_particles, glm::mat4(0.0f));
     rotations.resize(number_of_particles, glm::mat4(1.0f));
     scales.resize(number_of_particles, 1.0f);
 
@@ -23,16 +24,14 @@ IntParticleEmitter::IntParticleEmitter(Drawable* _model, int number) {
 
 void IntParticleEmitter::renderParticles(int time) {
     if (number_of_particles == 0) return;
-    if(time<1) {
-        bindAndUpdateBuffers();
-    }
+    bindAndUpdateBuffers();
     glDrawElementsInstanced(GL_TRIANGLES, 3 * model->indices.size(), GL_UNSIGNED_INT, 0, number_of_particles);
 }
 
 glm::vec4 IntParticleEmitter::calculateBillboardRotationMatrix(glm::vec3 particle_pos, glm::vec3 camera_pos)
 {
     glm::vec3 dir = camera_pos - particle_pos;
-    dir.y = 0;
+    //dir.y = 0;
     dir = glm::normalize(dir);
     glm::vec3 rot_axis = glm::cross(glm::vec3(0, 0, 1), dir);
     float rot_angle = glm::acos(glm::dot(glm::vec3(0, 0, 1), dir));
@@ -42,15 +41,17 @@ glm::vec4 IntParticleEmitter::calculateBillboardRotationMatrix(glm::vec3 particl
 
 void IntParticleEmitter::bindAndUpdateBuffers()
 {
-
+    if (use_sorting) {
+        std::sort(p_attributes.begin(), p_attributes.end());
+        std::reverse(p_attributes.begin(), p_attributes.end());
+    }
 
 #ifdef USE_PARALLEL_TRANSFORM
     //Calculate the model matrix in parallel to save performance
-    std::transform(std::execution::par_unseq, p_attributes.begin(), p_attributes.end(), transformations.begin(),
+    std::transform(std::execution::par_unseq, p_attributes.begin(), p_attributes.end(), translations.begin(),
         [](particleAttributes p)->glm::mat4 {
             if (p.life == 0) return glm::mat4(0.0f);
-            auto t = glm::translate(glm::mat4(), p.position);
-            return t;
+            return glm::translate(glm::mat4(), p.position);
         });
 
         //*//
@@ -58,35 +59,36 @@ void IntParticleEmitter::bindAndUpdateBuffers()
          std::transform(std::execution::par_unseq, p_attributes.begin(), p_attributes.end(), rotations.begin(),
             [](particleAttributes p)->glm::mat4 {
                 if (p.life == 0) return glm::mat4(0.0f);
-                auto r = glm::rotate(glm::mat4(), glm::radians(p.rot_angle), p.rot_axis);
-                return r;
+                return glm::rotate(glm::mat4(), glm::radians(p.rot_angle), p.rot_axis);
             });
+    else {
+        std::fill(rotations.begin(), rotations.end(), glm::mat4(1.0f));
+    }
 
-     std::transform(std::execution::par_unseq, p_attributes.begin(), p_attributes.end(), scales.begin(),
-         [](particleAttributes p)->float {
-             return p.mass;
-         });
+    std::transform(std::execution::par_unseq, p_attributes.begin(), p_attributes.end(), scales.begin(),
+        [](particleAttributes p)->float {
+            return p.mass;
+        });
         //*/
 #else
     for (int i = 0; i < p_attributes.size(); i++) {
         auto p = p_attributes[i];
-        auto t = glm::translate(glm::mat4(), p.position);
-        transformations[i] = t;
+        translations[i] = glm::translate(glm::mat4(), p.position);
     }
-    //*//
+
     if(use_rotations)
         for (int i = 0; i < p_attributes.size(); i++) {
             auto p = p_attributes[i];
-            auto r = glm::rotate(glm::mat4(), glm::radians(p.rot_angle), p.rot_axis);
-            rotations[i] = r;
+            rotations[i] = glm::rotate(glm::mat4(), glm::radians(p.rot_angle), p.rot_axis);
         }
-    //*/
+    else {
+        std::fill(rotations.begin(), rotations.end(), glm::mat4(1.0f));
+    }
+
     for (int i = 0; i < p_attributes.size(); i++) {
         auto p = p_attributes[i];
         scales[i] = p.mass;
     }
-    
-
 #endif // USE_PARALLEL_TRANSFORM
 
     //Bind the VAO
@@ -95,7 +97,7 @@ void IntParticleEmitter::bindAndUpdateBuffers()
     //Send transformation data to the GPU
     glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);
     glBufferData(GL_ARRAY_BUFFER, number_of_particles * sizeof(glm::mat4), NULL, GL_STREAM_DRAW); // Buffer orphaning and reallocating to avoid synchronization, see https://www.khronos.org/opengl/wiki/Buffer_Object_Streaming
-    glBufferSubData(GL_ARRAY_BUFFER, 0, number_of_particles * sizeof(glm::mat4), &transformations[0]); //Sending data
+    glBufferSubData(GL_ARRAY_BUFFER, 0, number_of_particles * sizeof(glm::mat4), &translations[0]); //Sending data
 
     glBindBuffer(GL_ARRAY_BUFFER, rotations_buffer);
     glBufferData(GL_ARRAY_BUFFER, number_of_particles * sizeof(glm::mat4), NULL, GL_STREAM_DRAW); // Buffer orphaning and reallocating to avoid synchronization, see https://www.khronos.org/opengl/wiki/Buffer_Object_Streaming
@@ -111,7 +113,7 @@ void IntParticleEmitter::changeParticleNumber(int new_number) {
 
     number_of_particles = new_number;
     p_attributes.resize(number_of_particles, particleAttributes());
-    transformations.resize(number_of_particles, glm::mat4(0.0f));
+    translations.resize(number_of_particles, glm::mat4(0.0f));
     rotations.resize(number_of_particles, glm::mat4(1.0f));
     scales.resize(number_of_particles, 1.0f);
 
