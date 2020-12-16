@@ -12,14 +12,16 @@ void FountainEmitter::updateParticles(float time, float dt) {
 
     //This is for the fountain to slowly increase the number of its particles to the max amount
     //instead of shooting all the particles at once
-    if(active_particles < number_of_particles) {
+    if (active_particles < number_of_particles) {
         int batch = 14;
         int limit = std::min(number_of_particles - active_particles, batch);
-        for(int i = 0 ; i < limit; i++){
+        for (int i = 0; i < limit; i++) {
             createNewParticle(active_particles);
             active_particles++;
         }
     }
+    else
+        active_particles = number_of_particles; //In case we resized our ermitter to a smaller particle number
 
     for(int i = 0; i < active_particles; i++){
         particleAttributes & particle = p_attributes[i];

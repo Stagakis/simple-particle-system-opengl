@@ -162,9 +162,9 @@ void mainLoop() {
         f_emmiter.renderParticles(0);
         orb_emitter2.renderParticles(0);
 
-        glUseProgram(normalShaderProgram);
         
         /*//
+        glUseProgram(normalShaderProgram);
         monkey->bind();
         for (int i = 0; i < f_emmiter.number_of_particles; i++) {
             auto p = f_emmiter.p_attributes[i];

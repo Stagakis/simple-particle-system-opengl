@@ -14,6 +14,7 @@ ParticleEmitterInt::ParticleEmitterInt(Drawable* _model, int number) {
 }
 
 void ParticleEmitterInt::renderParticles(int time) {
+    if (number_of_particles == 0) return;
     if(time<1) {
         bindAndUpdateBuffers();
     }
@@ -82,16 +83,13 @@ void ParticleEmitterInt::bindAndUpdateBuffers()
             return t * r * s;
         });
 
-    //Bind the coresponding VAO of the model, since we are going to draw it
+    //Bind the VAO
     glBindVertexArray(emitterVAO);
 
     //Send transformation data to the GPU
     glBindBuffer(GL_ARRAY_BUFFER, transformations_buffer);
     glBufferData(GL_ARRAY_BUFFER, number_of_particles * sizeof(glm::mat4), NULL, GL_STREAM_DRAW); // Buffer orphaning and reallocating to avoid synchronization, see https://www.khronos.org/opengl/wiki/Buffer_Object_Streaming
     glBufferSubData(GL_ARRAY_BUFFER, 0, number_of_particles * sizeof(glm::mat4), &transformations[0]); //Sending data
-
-    //GLSL treats mat4 data as 4 vec4. So we need to enable attributes 3,4,5 and 6, one for each vec4
-
 }
 
 void ParticleEmitterInt::changeParticleNumber(int new_number) {
