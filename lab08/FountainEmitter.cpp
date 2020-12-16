@@ -1,12 +1,8 @@
-//
-// Created by stagakis on 9/12/20.
-//
-
 #include "FountainEmitter.h"
 #include <iostream>
 #include <algorithm>
 
-FountainEmitter::FountainEmitter(Drawable *_model, int number) : ParticleEmitterInt(_model, number) {}
+FountainEmitter::FountainEmitter(Drawable *_model, int number) : IntParticleEmitter(_model, number) {}
 
 void FountainEmitter::updateParticles(float time, float dt) {
 

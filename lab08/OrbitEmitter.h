@@ -5,8 +5,9 @@
 #ifndef VVR_OGL_LABORATORY_ORBITEMITTER_H
 #define VVR_OGL_LABORATORY_ORBITEMITTER_H
 
-#include "ParticleEmitterInt.h"
-class OrbitEmitter : public ParticleEmitterInt{
+#include "IntParticleEmitter.h"
+
+class OrbitEmitter : public IntParticleEmitter {
 public:
 
     std::vector<float> particle_radius; //a specific radius value for each particle. It is generated in the constructor

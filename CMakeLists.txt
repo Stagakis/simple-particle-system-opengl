@@ -127,8 +127,8 @@ add_definitions(
 # lab08
 add_executable(lab08
   lab08/lab.cpp
-  lab08/ParticleEmitterInt.cpp
-  lab08/ParticleEmitterInt.h
+  lab08/IntParticleEmitter.cpp
+  lab08/IntParticleEmitter.h
   lab08/texture.cpp
   lab08/texture.h
 

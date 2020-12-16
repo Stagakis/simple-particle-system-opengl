@@ -4,9 +4,9 @@
 
 #ifndef VVR_OGL_LABORATORY_FOUNTAINEMITTER_H
 #define VVR_OGL_LABORATORY_FOUNTAINEMITTER_H
-#include <ParticleEmitterInt.h>
+#include <IntParticleEmitter.h>
 
-class FountainEmitter : public ParticleEmitterInt {
+class FountainEmitter : public IntParticleEmitter {
     public:
         FountainEmitter(Drawable* _model, int number);
 

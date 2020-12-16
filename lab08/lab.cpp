@@ -18,7 +18,6 @@
 #include <common/camera.h>
 #include <model.h>
 #include <texture.h>
-#include "SimpleEmitter.h"
 #include "FountainEmitter.h"
 #include "OrbitEmitter.h"
 //TODO delete the includes afterwards
@@ -48,10 +47,11 @@ GLFWwindow* window;
 Camera* camera;
 GLuint particleShaderProgram, normalShaderProgram;
 GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation, projectionAndViewMatrix;
+GLuint translationMatrixLocation, rotationMatrixLocation, scaleMatrixLocation;
 GLuint diffuseTexture, diffuceColorSampler;
 
-glm::vec3 orbit_emmiter_pos(0.0f, 10.0f, 0.0f);
-int particles_slider= 3000;
+glm::vec3 slider_emitter_pos(0.0f, 10.0f, 0.0f);
+int particles_slider= 12000;
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 bool game_paused = false;
@@ -63,10 +63,10 @@ void renderHelpingWindow() {
 
     ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
 
-    ImGui::SliderFloat("x position", &orbit_emmiter_pos[0], -30.0f, 30.0f);
-    ImGui::SliderFloat("y position", &orbit_emmiter_pos[1], -30.0f, 30.0f);
-    ImGui::SliderFloat("z position", &orbit_emmiter_pos[2], -30.0f, 30.0f);
-    ImGui::SliderInt("particles", &particles_slider, 0, 8000);
+    ImGui::SliderFloat("x position", &slider_emitter_pos[0], -30.0f, 30.0f);
+    ImGui::SliderFloat("y position", &slider_emitter_pos[1], -30.0f, 30.0f);
+    ImGui::SliderFloat("z position", &slider_emitter_pos[2], -30.0f, 30.0f);
+    ImGui::SliderInt("particles", &particles_slider, 0, 20000);
 
 
     if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -93,7 +93,12 @@ void createContext() {
 
     projectionAndViewMatrix = glGetUniformLocation(particleShaderProgram, "PV");
 
+    translationMatrixLocation = glGetUniformLocation(normalShaderProgram, "T");
+    rotationMatrixLocation = glGetUniformLocation(normalShaderProgram, "R");
+    scaleMatrixLocation = glGetUniformLocation(normalShaderProgram, "S");
+
     modelMatrixLocation = glGetUniformLocation(normalShaderProgram, "M");
+
     viewMatrixLocation = glGetUniformLocation(normalShaderProgram, "V");
     projectionMatrixLocation = glGetUniformLocation(normalShaderProgram, "P");
 
@@ -124,13 +129,14 @@ void mainLoop() {
 
     OrbitEmitter orb_emitter2(monkey,  800, 20.0f, 40.0f);
 
-    FountainEmitter f_emmiter(monkey,  3*particles_slider);
+    FountainEmitter f_emitter(monkey,  particles_slider);
+
     //FountainEmitter f_emmiter2(monkey,  5500);
 
     float t = glfwGetTime();
     do {
-        f_emmiter.changeParticleNumber(particles_slider);
-        orb_emitter2.emitter_pos = orbit_emmiter_pos;
+        f_emitter.changeParticleNumber(particles_slider);
+        f_emitter.emitter_pos = slider_emitter_pos;
 
         float currentTime = glfwGetTime();
         float dt = currentTime - t;
@@ -150,32 +156,42 @@ void mainLoop() {
         auto PV = projectionMatrix * viewMatrix;
         glUniformMatrix4fv(projectionAndViewMatrix, 1, GL_FALSE, &PV[0][0]);
 
+
+        //*/ Use particle based drawing
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseTexture);
         glUniform1i(diffuceColorSampler, 0);
         if(!game_paused) {
-            orb_emitter.updateParticles(currentTime, dt);
-            orb_emitter2.updateParticles(currentTime, dt);
-            f_emmiter.updateParticles(currentTime, dt);
+            f_emitter.updateParticles(currentTime, dt);
+            //orb_emitter.updateParticles(currentTime, dt);
+            //orb_emitter2.updateParticles(currentTime, dt);
         }
-        orb_emitter.renderParticles(0);
-        f_emmiter.renderParticles(0);
-        orb_emitter2.renderParticles(0);
-
+        f_emitter.renderParticles(0);
+        //orb_emitter.renderParticles(0);
+        //orb_emitter2.renderParticles(0);
+        //*/
         
-        /*//
+        
+        /*// Use standard drawing procedure
         glUseProgram(normalShaderProgram);
         monkey->bind();
+        glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
+        glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
         for (int i = 0; i < f_emmiter.number_of_particles; i++) {
             auto p = f_emmiter.p_attributes[i];
             //auto modelMatrix = glm::scale(mat4(1.0f), vec3(4.0f, 4.0f, 4.0f));
-            auto r = glm::rotate(glm::mat4(), glm::radians(p.rot_angle), p.rot_axis);
-            auto s = glm::scale(glm::mat4(), glm::vec3(p.mass, p.mass, p.mass));
-            auto t = glm::translate(glm::mat4(), p.position);
+            auto r = glm::rotate(glm::mat4(), 1.0f, glm::vec3(0,1,0));
+            auto s = glm::scale(glm::mat4(), glm::vec3(1,1,1));
+            auto t = glm::translate(glm::mat4(), glm::vec3(RAND*30-60, RAND * 30 - 60, RAND * 30 - 60));
+            
+            glUniformMatrix4fv(translationMatrixLocation, 1, GL_FALSE, &t[0][0]);
+            glUniformMatrix4fv(rotationMatrixLocation, 1, GL_FALSE, &r[0][0]);
+            glUniformMatrix4fv(scaleMatrixLocation, 1, GL_FALSE, &s[0][0]);
+
+            
             auto modelMatrix = t * r * s;
             glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
-            glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
-            glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
+            
             monkey->draw();
         }
         //*/

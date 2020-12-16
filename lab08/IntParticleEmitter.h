@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "model.h"
 
+#define USE_PARALLEL_TRANSFORM
+
 //Gives a random number between 0 and 1
 #define RAND ((float) rand()) / (float) RAND_MAX
 
@@ -27,17 +29,22 @@ struct particleAttributes{
 
 
 //ParticleEmitterInt is an interface class. Emitter classes must derive from this one and implement the updateParticles method
-class ParticleEmitterInt
+class IntParticleEmitter
 {
 public:
     GLuint emitterVAO;
     int number_of_particles;
     std::vector<glm::mat4> transformations;
+
+    std::vector<glm::mat4> rotations;
+    std::vector<float> scales;
+
+    bool use_rotations = true;
 	std::vector<particleAttributes> p_attributes;
 
     glm::vec3 emitter_pos; //the origin of the emitter
 
-	ParticleEmitterInt(Drawable* _model, int number);
+    IntParticleEmitter(Drawable* _model, int number);
 	void changeParticleNumber(int new_number);
 	void renderParticles(int time = 0);
 	virtual void updateParticles(float time, float dt) = 0;
@@ -48,5 +55,7 @@ public:
 private:
     void bindAndUpdateBuffers();
     GLuint transformations_buffer;
+    GLuint rotations_buffer;
+    GLuint scales_buffer;
 };
 

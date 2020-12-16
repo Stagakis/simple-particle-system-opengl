@@ -7,9 +7,11 @@ layout(location = 2) in vec2 vertexUV;
 
 out vec2 UV;
 uniform mat4 M;
+uniform mat4 T;
+uniform mat4 R;
+uniform mat4 S;
 uniform mat4 V;
 uniform mat4 P;
-//*/
 
 
 void main() {
@@ -17,6 +19,9 @@ void main() {
 
     UV = vertexUV;
 
-    gl_Position =  P*V*M * vec4(vertexPosition_modelspace, 1);
+    gl_Position =  P * V * T * R * S * vec4(vertexPosition_modelspace, 1);
 
+    /*/
+    gl_Position =  P * V * M * vec4(vertexPosition_modelspace, 1);
+    //*/
 }
