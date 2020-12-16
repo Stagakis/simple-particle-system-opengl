@@ -14,7 +14,7 @@ out vec2 UV;
 // Values that stay constant for the whole mesh.
 uniform mat4 PV;
 
-//*//
+/*//
 //For the math behind this, look https://sites.google.com/site/glennmurray/Home/rotation-matrices-and-formulas/rotation-about-an-arbitrary-axis-in-3-dimensions
 mat4 rotate(vec3 direction, float theta){
     vec3 rotation_vector = direction;

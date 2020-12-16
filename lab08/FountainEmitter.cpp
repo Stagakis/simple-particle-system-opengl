@@ -4,7 +4,7 @@
 
 FountainEmitter::FountainEmitter(Drawable *_model, int number) : IntParticleEmitter(_model, number) {}
 
-void FountainEmitter::updateParticles(float time, float dt) {
+void FountainEmitter::updateParticles(float time, float dt, glm::vec3 camera_pos) {
 
     //This is for the fountain to slowly increase the number of its particles to the max amount
     //instead of shooting all the particles at once
@@ -16,8 +16,9 @@ void FountainEmitter::updateParticles(float time, float dt) {
             active_particles++;
         }
     }
-    else
+    else {
         active_particles = number_of_particles; //In case we resized our ermitter to a smaller particle number
+    }
 
     for(int i = 0; i < active_particles; i++){
         particleAttributes & particle = p_attributes[i];
@@ -25,10 +26,17 @@ void FountainEmitter::updateParticles(float time, float dt) {
         if(particle.position.y < emitter_pos.y - 10.0f || particle.life == 0.0f){
             createNewParticle(i);
         }
+        //particle.rot_angle += 90*dt;  //old
 
-        particle.rot_angle += 90*dt;
         particle.position = particle.position + particle.velocity*dt + particle.accel*(dt*dt)*0.5f;
         particle.velocity = particle.velocity + particle.accel*dt;
+
+        //particle.position = glm::vec3(0, 5, 0);
+        auto bill_rot = calculateBillboardRotationMatrix(particle.position, camera_pos);
+        //std::cout << glm::to_string(bill_rot) << std::endl;
+        particle.rot_axis = glm::vec3(bill_rot.x, bill_rot.y, bill_rot.z);
+        particle.rot_angle = glm::degrees(bill_rot.w);
+
     }
 }
 

@@ -48,10 +48,10 @@ Camera* camera;
 GLuint particleShaderProgram, normalShaderProgram;
 GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation, projectionAndViewMatrix;
 GLuint translationMatrixLocation, rotationMatrixLocation, scaleMatrixLocation;
-GLuint diffuseTexture, diffuceColorSampler;
+GLuint monkeyTexture, diffuceColorSampler, fireTexture;
 
 glm::vec3 slider_emitter_pos(0.0f, 10.0f, 0.0f);
-int particles_slider= 12000;
+int particles_slider= 10000;
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 bool game_paused = false;
@@ -104,7 +104,8 @@ void createContext() {
 
 
     diffuceColorSampler = glGetUniformLocation(particleShaderProgram, "texture0");
-    diffuseTexture = loadSOIL("suzanne_diffuse.bmp");
+    monkeyTexture = loadSOIL("suzanne_diffuse.bmp");
+    fireTexture = loadSOIL("fire.png");
     glfwSetKeyCallback(window, pollKeyboard);
 }
 
@@ -124,6 +125,7 @@ void mainLoop() {
 
     camera->position = vec3(0, 5, 30);
     auto* monkey = new Drawable("suzanne.obj");
+    auto* quad = new Drawable("quad.obj");
 
     OrbitEmitter orb_emitter(monkey,  2000, 10.0f, 60.0f);
 
@@ -159,10 +161,10 @@ void mainLoop() {
 
         //*/ Use particle based drawing
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+        glBindTexture(GL_TEXTURE_2D, monkeyTexture);
         glUniform1i(diffuceColorSampler, 0);
         if(!game_paused) {
-            f_emitter.updateParticles(currentTime, dt);
+            f_emitter.updateParticles(currentTime, dt, camera->position);
             //orb_emitter.updateParticles(currentTime, dt);
             //orb_emitter2.updateParticles(currentTime, dt);
         }
@@ -177,7 +179,7 @@ void mainLoop() {
         monkey->bind();
         glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
         glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
-        for (int i = 0; i < f_emmiter.number_of_particles; i++) {
+        for (int i = 0; i < slider_emitter_pos; i++) {
             auto p = f_emmiter.p_attributes[i];
             //auto modelMatrix = glm::scale(mat4(1.0f), vec3(4.0f, 4.0f, 4.0f));
             auto r = glm::rotate(glm::mat4(), 1.0f, glm::vec3(0,1,0));

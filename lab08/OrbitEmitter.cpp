@@ -11,7 +11,7 @@ OrbitEmitter::OrbitEmitter(Drawable *_model, int number, float _radius_min, floa
     }
 }
 
-void OrbitEmitter::updateParticles(float time, float dt) {
+void OrbitEmitter::updateParticles(float time, float dt, glm::vec3 camera_pos) {
     for(int i = 0 ; i < number_of_particles ; i++){
         auto & p = p_attributes[i];
 
