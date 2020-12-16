@@ -1,0 +1,45 @@
+#version 330 core
+
+// input vertex, UV coordinates and normal
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexNormal_modelspace;
+layout(location = 2) in vec2 vertexUV;
+layout (location = 3) in mat4 aInstanceMatrix;
+
+out vec2 UV;
+//out vec3 normal;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 PV;
+
+/*//
+//For the math behind this, look https://sites.google.com/site/glennmurray/Home/rotation-matrices-and-formulas/rotation-about-an-arbitrary-axis-in-3-dimensions
+mat4 rotate(vec3 direction, float theta){
+    vec3 rotation_vector = direction;
+    float sin_theta = sin(theta);
+    float cos_theta = cos(theta);
+
+    float u = rotation_vector.x;
+    float v = rotation_vector.y;
+    float w = rotation_vector.z;
+
+    mat4 rotation_mat = mat4(1.0f);
+    rotation_mat[0] = vec4(u*u + (1-u*u)*cos_theta, u*v*(1-cos_theta)+w*sin_theta, u*v*(1-cos_theta) - v*sin_theta, 0);
+    rotation_mat[1] = vec4(u*v*(1-cos_theta) - w*sin_theta, v*v + (1-v*v)*cos_theta, v*w*(1-cos_theta) + u*sin_theta, 0);
+    rotation_mat[2] = vec4(u*w*(1-cos_theta) + v*sin_theta, v*w*(1-cos_theta) - u*sin_theta, w*w + (1-w*w)*cos_theta, 0);
+    rotation_mat[3] = vec4(0,0,0,1);
+
+    return rotation_mat;
+}
+//*/
+
+
+void main() {
+    // vertex position
+
+    UV = vertexUV;
+
+    gl_Position =  PV * aInstanceMatrix * vec4(vertexPosition_modelspace, 1);
+
+    gl_PointSize = 10;
+}
