@@ -137,7 +137,6 @@ void mainLoop() {
     auto* monkey = new Drawable("suzanne.obj");
     auto* quad = new Drawable("quad.obj");
 
-    OrbitEmitter orb_emitter(monkey,  2000, 10.0f, 60.0f);
     FountainEmitter f_emitter = FountainEmitter(monkey,  particles_slider);
 
     float t = glfwGetTime();
@@ -172,10 +171,9 @@ void mainLoop() {
         glUniform1i(diffuceColorSampler, 0);
         if(!game_paused) {
             f_emitter.updateParticles(currentTime, dt, camera->position);
-            //orb_emitter.updateParticles(currentTime, dt, camera->position);
         }
         f_emitter.renderParticles(0);
-        //orb_emitter.renderParticles(0);
+
         //*/
         
         

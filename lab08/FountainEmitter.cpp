@@ -31,13 +31,6 @@ void FountainEmitter::updateParticles(float time, float dt, glm::vec3 camera_pos
 
         particle.position = particle.position + particle.velocity*dt + particle.accel*(dt*dt)*0.5f;
         particle.velocity = particle.velocity + particle.accel*dt;
-
-        /*//
-        auto bill_rot = calculateBillboardRotationMatrix(particle.position, camera_pos);
-        particle.rot_axis = glm::vec3(bill_rot.x, bill_rot.y, bill_rot.z);
-        particle.rot_angle = glm::degrees(bill_rot.w);
-        particle.dist_from_camera = glm::length(particle.position - camera_pos);
-        //*/
     }
 }
 

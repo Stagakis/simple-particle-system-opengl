@@ -9,7 +9,5 @@ uniform sampler2D texture0;
 void main() {
     //fragmentColor = vec4(texture(texture0, UV).rgb, 0.5f);
     vec4 texColor = texture(texture0, UV);
-    if(length(texColor.rgb) < 0.1)
-        discard;
     fragmentColor = vec4(texColor.rgb, 0.5f);
 }

@@ -30,13 +30,10 @@ void IntParticleEmitter::renderParticles(int time) {
 
 glm::vec4 IntParticleEmitter::calculateBillboardRotationMatrix(glm::vec3 particle_pos, glm::vec3 camera_pos)
 {
-    glm::vec3 dir = camera_pos - particle_pos;
-    //dir.y = 0;
-    dir = glm::normalize(dir);
-    glm::vec3 rot_axis = glm::cross(glm::vec3(0, 0, 1), dir);
-    float rot_angle = glm::acos(glm::dot(glm::vec3(0, 0, 1), dir));
-
-    return glm::vec4(rot_axis, rot_angle);
+    //Caclulate the rotation and angle of the rotation required
+    //the function returns a vec4. The first three values are the
+    //axis of rotation and the fourth is angle.
+    return glm::vec4(0, 0, 0, 0);
 }
 
 void IntParticleEmitter::bindAndUpdateBuffers()
