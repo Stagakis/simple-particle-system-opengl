@@ -38,8 +38,10 @@ public:
     glm::vec3 emitter_pos; //the origin of the emitter
 
 	ParticleEmitterInt(Drawable* _model, int number);
+	void changeParticleNumber(int new_number);
 	void renderParticles(int time = 0);
 	virtual void updateParticles(float time, float dt) = 0;
+	virtual void createNewParticle(int index) = 0;
     void configureVAO();
     Drawable* model;
 

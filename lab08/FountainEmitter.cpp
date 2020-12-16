@@ -24,7 +24,7 @@ void FountainEmitter::updateParticles(float time, float dt) {
     for(int i = 0; i < active_particles; i++){
         particleAttributes & particle = p_attributes[i];
 
-        if(particle.position.y < emitter_pos.y - 10.0f){
+        if(particle.position.y < emitter_pos.y - 10.0f || particle.life == 0.0f){
             createNewParticle(i);
         }
 

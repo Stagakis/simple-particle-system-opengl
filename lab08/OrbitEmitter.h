@@ -11,9 +11,9 @@ public:
 
     std::vector<float> particle_radius; //a specific radius value for each particle. It is generated in the constructor
     void updateParticles(float time, float dt) override;
+    void createNewParticle(int index) override;
 
     OrbitEmitter(Drawable* _model, int number, float _radius_min, float _radius_max);
-    void createNewParticle(int index);
     float radius_min, radius_max;
 };
 

@@ -11,7 +11,7 @@ class FountainEmitter : public ParticleEmitterInt {
         FountainEmitter(Drawable* _model, int number);
 
         int active_particles = 0; //number of particles that have been instantiated
-        void createNewParticle(int index);
+        void createNewParticle(int index) override;
         void updateParticles(float time, float dt) override;
 };
 

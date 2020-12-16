@@ -51,6 +51,7 @@ GLuint projectionMatrixLocation, viewMatrixLocation, modelMatrixLocation, projec
 GLuint diffuseTexture, diffuceColorSampler;
 
 glm::vec3 orbit_emmiter_pos(0.0f, 10.0f, 0.0f);
+int particles_slider= 3000;
 void pollKeyboard(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 bool game_paused = false;
@@ -65,6 +66,8 @@ void renderHelpingWindow() {
     ImGui::SliderFloat("x position", &orbit_emmiter_pos[0], -30.0f, 30.0f);
     ImGui::SliderFloat("y position", &orbit_emmiter_pos[1], -30.0f, 30.0f);
     ImGui::SliderFloat("z position", &orbit_emmiter_pos[2], -30.0f, 30.0f);
+    ImGui::SliderInt("particles", &particles_slider, 0, 8000);
+
 
     if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
         counter++;
@@ -121,11 +124,12 @@ void mainLoop() {
 
     OrbitEmitter orb_emitter2(monkey,  800, 20.0f, 40.0f);
 
-    FountainEmitter f_emmiter(monkey,  5500);
+    FountainEmitter f_emmiter(monkey,  3*particles_slider);
     //FountainEmitter f_emmiter2(monkey,  5500);
 
     float t = glfwGetTime();
     do {
+        f_emmiter.changeParticleNumber(particles_slider);
         orb_emitter2.emitter_pos = orbit_emmiter_pos;
 
         float currentTime = glfwGetTime();
@@ -160,7 +164,7 @@ void mainLoop() {
 
         glUseProgram(normalShaderProgram);
         
-        //*//
+        /*//
         monkey->bind();
         for (int i = 0; i < f_emmiter.number_of_particles; i++) {
             auto p = f_emmiter.p_attributes[i];
@@ -174,7 +178,7 @@ void mainLoop() {
             glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
             monkey->draw();
         }
-
+        //*/
 
         renderHelpingWindow();
         glfwPollEvents();
