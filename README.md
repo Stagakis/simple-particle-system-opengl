@@ -3,7 +3,7 @@ This is a Particle System Demo I made for OpenGL. This code was also used for th
 
 This particle system can accept any geometry as the basis for the particle emitter, supports complete 6-DOF control of each particle, as well as transparency (although at a big performance hit).
 
-The architecture consists of an interface class which is intented to be used as a basis for creation of a concrete particle emitter class. The interface completely encapsulates all the ugly OpenGL code and makes the manipulation of particles completely OpenGL-code free. 
+The architecture consists of an interface class which is intended to be used as a basis for creation of a concrete particle emitter class. The interface completely encapsulates all the ugly OpenGL code and makes the manipulation of particles completely OpenGL-code free. 
 
 The source code in the lab08 folder also serves as a demo for demonstrating two example emitters (a FountainEmitter and an OrbitEmitter) and for comparing performances with a non-instance based rendering to showcase its advantages for particle rendering.
 
