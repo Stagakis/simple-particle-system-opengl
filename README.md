@@ -1,5 +1,5 @@
 # Simple Particle System
-This is a Particle System Demo I made for OpenGL. This code is also used for the laboratory lessons of Computer Graphics in University of Patras.
+This is a Particle System Demo I made for OpenGL. This code was also used for the laboratory lessons of Computer Graphics in University of Patras while I was teaching there and was created to enrich the course.
 
 This particle system can accept any geometry as the basis for the particle emitter, supports complete 6-DOF control of each particle, as well as transparency (although at a big performance hit).
 
